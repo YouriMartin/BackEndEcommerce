@@ -24,14 +24,14 @@ var options = {
 };
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: "5m" });
+  return jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: "20m" });
 }
 function authenticateToken(req, res, next) {
- // const token = req.headers["x-access-token"];
+  // const token = req.headers["x-access-token"];
 
- console.log("req header : ", req.headers)
+  console.log("req header : ", req.headers);
   const token = req.headers["authorization"];
-  console.log("token: ",token);
+  console.log("token: ", token);
   if (token == null) {
     return res.sendStatus(401);
   }
@@ -51,18 +51,18 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get("/burgers",authenticateToken,  function (req, res) {
-  bdd.getAll("_burger", function (burger) {
+app.get("/burgers", function (req, res) {
+  bdd.getAll("burger", function (burger) {
     res.json({ burger: burger });
   });
 });
-app.get("/boissons",authenticateToken, function (req, res) {
-  bdd.getAll("_boissons", function (boissons) {
+app.get("/boissons", function (req, res) {
+  bdd.getAll("boisson", function (boissons) {
     res.json({ boissons: boissons });
   });
 });
 app.get("/accompagnements", function (req, res) {
-  bdd.getAll("_accompagnement", function (accompagnements) {
+  bdd.getAll("accompagnement", function (accompagnements) {
     res.json({ accompagnements: accompagnements });
   });
 });
@@ -88,14 +88,11 @@ app.post("/inscription", function (req, res) {
 });
 app.post("/connexion", function (req, res) {
   bdd.getUser("_utilisateur", req.body, function (data) {
-    console.log(data);
-    const isValidPass = bcrypt.compareSync(
-      req.body.password,
-      data[0].password
-    );
+    // console.log(data);
+    const isValidPass = bcrypt.compareSync(req.body.password, data[0].password);
     if (isValidPass == true) {
       const token = generateAccessToken({ mail: data[0].mail });
-      console.log(token);
+      // console.log(token);
       res.status(200).send(token);
     } else {
       res.send("mdp invalide");

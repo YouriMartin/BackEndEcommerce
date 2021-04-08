@@ -1,28 +1,28 @@
 var mysql = require("mysql2");
 
 module.exports = {
-    query: query,
+  query: query,
 };
 // Internal connection pool
 var pool = mysql.createPoolCluster({ canRetry: true });
 
 // Add main connection
 pool.add({
-    host: "localhost",
-    user: "root",
-    password: "root",
-    database: "burger",
+  host: "localhost",
+  user: "root",
+  password: "root",
+  database: "burger_commerce",
 });
 
 // Test de la connection
 pool.getConnection(function (err, _connection) {
-    if (err) {
-        throw new Error("MySQL connection error: " + err);
-        process.exit(1);
-    }
+  if (err) {
+    throw new Error("MySQL connection error: " + err);
+    process.exit(1);
+  }
 
-    console.info("MySQL connection OK");
-    _connection.release();
+  console.info("MySQL connection OK");
+  _connection.release();
 });
 
 // Public API
@@ -30,19 +30,19 @@ pool.getConnection(function (err, _connection) {
 //   => cb(err, rows, fields)
 
 function query(sql, params, cb) {
-    if (typeof params === "function") {
-        cb = params;
-        params = [];
+  if (typeof params === "function") {
+    cb = params;
+    params = [];
+  }
+
+  pool.getConnection(function (err, connection) {
+    if (err) {
+      return cb(err);
     }
 
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            return cb(err);
-        }
-
-        connection.query(sql, params, function (err, rows, fields) {
-            connection.release();
-            cb(err, rows, fields);
-        });
+    connection.query(sql, params, function (err, rows, fields) {
+      connection.release();
+      cb(err, rows, fields);
     });
+  });
 }
