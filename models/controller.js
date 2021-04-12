@@ -46,8 +46,6 @@ exports.create = function (table, datas, callback) {
     "','" +
     datas.mail +
     "','" +
-    datas.pseudo +
-    "' ,'" +
     hash +
     "' );";
   console.log(sql);
@@ -59,12 +57,12 @@ exports.create = function (table, datas, callback) {
   });
 };
 exports.getUser = function (table, datas, callback) {
-  console.log(datas);
+ // console.log(datas);
   var sql =
     "SELECT * FROM " + table + " WHERE mail = " + "'" + datas.mail + "'";
   console.log(sql);
   conn.query(sql, function (error, rows) {
-    console.log(rows);
+    //console.log("rows : ",rows);
     if (error) {
       console.log(error);
     }
