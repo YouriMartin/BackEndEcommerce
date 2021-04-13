@@ -13,11 +13,7 @@ const cookieParser = require("cookie-parser");
 const app = express();
 app.use(cookieParser());
 
-app.use(cors( {origin: [
-  'http://localhost:9000'
-],
-credentials: true,
-exposedHeaders: ['set-cookie']} ));
+app.use(cors());
 
 app.use(
   express.urlencoded({
@@ -96,7 +92,7 @@ app.post("/inscription", function (req, res) {
     console.log("retapp", ret);
     if (ret[0].nb > 0) {
      //res.status(403).send({ message: "Failed! Email is already in use ! " });
-    res.json({message: "E-mail déjà utilisé ! "})
+    res.send({message: "E-mail déjà utilisé ! "})
     } else {
       bdd.create("utilisateur", req.body, function (err, utilisateurs) {
         // console.log(utilisateurs)
@@ -112,17 +108,9 @@ app.post("/connexion", function (req, res) {
     console.log("data :", data);
     const isValidPass = bcrypt.compareSync(req.body.password, data[0].password);
     if (isValidPass == true) {
-        let username = req.body.mail;
-        req.session.user =  username ;
-        console.log("username : ", username);
-        console.log("session:", req.session);
-        console.log("cookie : ", req.cookies)
-     /*   res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Accept', 'application/json');
-       res.setHeader('Access-Control-Allow-Origin', 'http://localhost:9000');
-        res.setHeader('Access-Control-Allow-Credentials',true);*/
-        res.send(username);
-     
+      res.json({
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+      })
       
     } else {
       res.send("mdp invalide");
