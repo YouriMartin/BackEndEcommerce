@@ -52,32 +52,37 @@ app.use(function (req, res, next) {
 });
 
 app.get("/burgers", function (req, res) {
-  bdd.getAll("burger", function (burger) {
+  bdd.getProduct("burger", function (burger) {
     res.json({ burger: burger });
   });
 });
 app.get("/boissons", function (req, res) {
-  bdd.getAll("boisson", function (boissons) {
+  bdd.getProduct("boisson", function (boissons) {
     res.json({ boissons: boissons });
   });
 });
 app.get("/accompagnements", function (req, res) {
-  bdd.getAll("accompagnement", function (accompagnements) {
+  bdd.getProduct("accompagnement", function (accompagnements) {
     res.json({ accompagnements: accompagnements });
   });
 });
 app.get("/menus", function (req, res) {
-  bdd.getAll("_menus", function (menus) {
+  bdd.getAll("menu", function (menus) {
     res.json({ menus: menus });
   });
 });
+app.post("/menuparams", function (req, res) {
+  bdd.getMenuParams(req.body, function (menuparams) {
+    res.json({ menuparams: menuparams });
+  });
+});
 app.post("/inscription", function (req, res) {
-  bdd.getOne("_utilisateur", req.body, function (ret) {
+  bdd.getOne("utilisateur", req.body, function (ret) {
     console.log("retapp", ret);
     if (ret[0].nb > 0) {
       res.status(403).send({ message: "Failed! Email is already in use ! " });
     } else {
-      bdd.create("_utilisateur", req.body, function (err, utilisateurs) {
+      bdd.create("utilisateur", req.body, function (err, utilisateurs) {
         // console.log(utilisateurs)
         if (err) {
           res.status(500).send({ message: err });
@@ -87,7 +92,7 @@ app.post("/inscription", function (req, res) {
   });
 });
 app.post("/connexion", function (req, res) {
-  bdd.getUser("_utilisateur", req.body, function (data) {
+  bdd.getUser("utilisateur", req.body, function (data) {
     // console.log(data);
     const isValidPass = bcrypt.compareSync(req.body.password, data[0].password);
     if (isValidPass == true) {
