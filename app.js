@@ -68,23 +68,28 @@ app.use(function (req, res, next) {
 });
 
 app.get("/burgers", function (req, res) {
-  bdd.getAll("burger", function (burger) {
+  bdd.getProduct("burger", function (burger) {
     res.json({ burger: burger });
   });
 });
 app.get("/boissons", function (req, res) {
-  bdd.getAll("boisson", function (boissons) {
+  bdd.getProduct("boisson", function (boissons) {
     res.json({ boissons: boissons });
   });
 });
 app.get("/accompagnements", function (req, res) {
-  bdd.getAll("accompagnement", function (accompagnements) {
+  bdd.getProduct("accompagnement", function (accompagnements) {
     res.json({ accompagnements: accompagnements });
   });
 });
 app.get("/menus", function (req, res) {
-  bdd.getAll("_menus", function (menus) {
+  bdd.getAll("menu", function (menus) {
     res.json({ menus: menus });
+  });
+});
+app.post("/menuparams", function (req, res) {
+  bdd.getMenuParams(req.body, function (menuparams) {
+    res.json({ menuparams: menuparams });
   });
 });
 app.post("/inscription", function (req, res) {
