@@ -2,13 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const bdd = require("./models/controller.js");
 const mysql = require("mysql2");
-/*const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");*/
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
 
-//dotenv.config();
+dotenv.config();
 
 const app = express();
 app.use(cookieParser());
@@ -30,7 +30,7 @@ var options = {
   database: "burger",
 };
 
-/*function generateAccessToken(user) {
+function generateAccessToken(user) {
   return jwt.sign(user, process.env.TOKEN_SECRET, { expiresIn: "20m" });
 }
 function authenticateToken(req, res, next) {
@@ -50,7 +50,7 @@ function authenticateToken(req, res, next) {
 
     next();
   });
-}*/
+}
 app.use(
   session({
     secret: "it'a secret!",
@@ -108,29 +108,14 @@ app.post("/connexion", function (req, res) {
     console.log("data :", data);
     const isValidPass = bcrypt.compareSync(req.body.password, data[0].password);
     if (isValidPass == true) {
-      res.json({
-        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
-      })
-      
+      const token = generateAccessToken({ mail: data[0].mail });
+      console.log("token",token);
+      res.status(200).send(token);
     } else {
       res.send("mdp invalide");
-    }
-  });
+    } 
+})
 });
-app.get("/deconnexion", function (req, res) {
-  sessionData = req.session;
-  sessionData.destroy(function (err) {
-    if (err) {
-      msg = "Error destroying session";
-      res.json(msg);
-    } else {
-      msg = "Session destroy successfully";
-      console.log(msg);
-      res.json(msg);
-    }
-    console.log("sessionData : ", sessionData);
-  });
-});
-app.listen(9000);
 
-console.log("le serveur écoute sur le port 9000");
+app.listen(9000);
+console.log("le serveur écoute sur le port 9000")
