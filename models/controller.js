@@ -94,3 +94,65 @@ exports.getUser = function (table, datas, callback) {
     callback(rows);
   });
 };
+
+exports.addCateg = function (table,datas,callback){
+  let sql = 
+  "INSERT INTO "+
+   table + 
+   " VALUE(NULL,'" +
+    datas.nom_categ +
+    "','" +
+    datas.photo_categ +
+    "' );";
+    console.log(sql);
+    conn.query(sql, function (error) {
+      if (error) {
+        console.log(error);
+      }
+      callback();
+    });
+}
+
+exports.addProduit = function (table,datas,callback){
+  let sql = 
+  "INSERT INTO "+
+   table + 
+   " VALUE(NULL,'" +
+    datas.nom_produit +
+    "','" +
+    datas.photo_produit +
+    "','" +
+    datas.prix_produit + 
+    "','" +
+    datas.description_produit +
+    "','" +
+    datas.id_categ +
+    "' );";
+    console.log(sql);
+    conn.query(sql, function (error) {
+      if (error) {
+        console.log(error);
+      }
+      callback();
+    });
+}
+
+exports.addMenu = function (table,datas,callback){
+  let sql = 
+  "INSERT INTO "+
+   table + 
+   " VALUE(NULL,'" +
+    datas.nom_menu +
+    "','" +
+    datas.photo_menu +
+    "','" +
+    datas.prix_menu + 
+    "' );";
+    console.log(sql);
+    conn.query(sql, function (error) {
+      if (error) {
+        console.log(error);
+      }
+      callback();
+    });
+}

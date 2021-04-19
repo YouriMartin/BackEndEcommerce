@@ -92,6 +92,9 @@ app.post("/menuparams", function (req, res) {
     res.json({ menuparams: menuparams });
   });
 });
+//----------------------------------------------------------------------------
+    // Formulaire inscription/connexion
+
 app.post("/inscription", function (req, res) {
   bdd.getOne("utilisateur", req.body, function (ret) {
     console.log("retapp", ret);
@@ -121,6 +124,26 @@ app.post("/connexion", function (req, res) {
     } 
 })
 });
+//-----------------------------------------------------------------------------------
+    // Formulaires ajout de données
+
+app.post("/addCateg",function (req,res){
+  bdd.addCateg("categorie",req.body,function(){
+    res.json({categ : "catégorie ajouter avec succès ! "})
+  })
+})
+
+app.post("/addProduit",function (req,res){
+  bdd.addProduit("produit",req.body,function(){
+    res.json({menu : "produit ajouter avec succès ! "})
+  })
+})
+
+app.post("/addMenu",function (req,res){
+  bdd.addMenu("menu",req.body,function(){
+   res.json({menu : "menu ajouter avec succès ! "})
+  })
+})
 
 app.listen(9000);
 console.log("le serveur écoute sur le port 9000")
