@@ -5,8 +5,12 @@ const mysql = require("mysql2");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
-const session = require("express-session");
+//const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const multer = require('multer')
+const sharp = require('sharp')
+const path = require('path')
+const fs = require('fs')
 
 dotenv.config();
 
@@ -51,19 +55,45 @@ function authenticateToken(req, res, next) {
     next();
   });
 }
-app.use(
-  session({
-    secret: "it'a secret!",
-    cookie: { maxAge: 6000,secure:false },
-    resave: true,
-    saveUninitialized: false,
-  
-  })
-);
+// Création du diskStorage de multer, il permet de définir notre configuration d'upload
+// /!\ Créez les dossiers de destination au cas où avant l'upload
+var storage = multer.diskStorage({
+  // La limite en taille du fichier
+  limits: {
+    fileSize: 1000000, //1Mo
+  },
+  // La destination, ici ce sera à la racine dans le dossier img
+  destination: function (req, file, cb) {
+    cb(null, './img')
+  },
+  // Gestion des erreurs
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
+      return cb(new Error('Le fichier doit etre un JPG'))
+    }
+    cb(undefined, true)
+  },
+  // Fonction qui renomme l'image
+  filename: function (req, file, cb) {
+    // Genère un nom aléatoire et récupère l'ancienne extension
+    cb(
+      null,
+      Math.random().toString(36).substring(7) +
+        '.' +
+        file.originalname.split('.')[1],
+    )
+  },
+})
+
+// Création de l'objet multer
+const upload = multer({
+  storage: storage,
+})
 
 app.use(express.json());
 app.use(function (req, res, next) {
   console.log("une requete a été effectué à", Date.now());
+ 
   next();
 });
 
@@ -126,16 +156,60 @@ app.post("/connexion", function (req, res) {
 });
 //-----------------------------------------------------------------------------------
     // Formulaires ajout de données
+    
+    app.post('/addCateg', upload.single('img'), async (req, res) => {
+      try {
+        if (req.file) {
+          console.log(req.file)
+          // Utilise la librairie sharp pour redimensionner en 200x100, et renvoi la miniature dans un autre fichier dans le dossier de destination choisi dans le diskStorage
+          await sharp(req.file.path, { failOnError: false })
+          .resize({ width: 200, height: 100 }) 
+          .toFile( 
+            path.resolve(req.file.destination + '/thumbnail', req.file.filename),
+            )
+            // Vous pouvez utiliser ces variables pour faire des insertions en base de données ou autre
+           let filename = req.file.filename
+          }
+          res.send('Upload fini')
+        } catch (e) {
+          res.status(400).send(e)
+        }
+           
+        bdd.addCateg("categorie",req,function(){
+          console.log("req.body : ",req.body)
+    })
+  });
+ 
+  app.get("/id_product", function (req, res) {
+    bdd.showId("categorie", function (categorie) {
+      console.log(categorie)
+      res.json({ categorie: categorie });
+    });
+  });
 
-app.post("/addCateg",function (req,res){
-  bdd.addCateg("categorie",req.body,function(){
-    res.json({categ : "catégorie ajouter avec succès ! "})
-  })
-})
 
-app.post("/addProduit",function (req,res){
-  bdd.addProduit("produit",req.body,function(){
-    res.json({menu : "produit ajouter avec succès ! "})
+  app.post('/addProduit', upload.single('img'), async (req, res) => {
+    var img = fs.readFileSync(req.file.path);
+    var encode_image = img.toString('base64');
+  //  console.log("encode : ",encode_image)
+    try {
+      if (req.file) {
+      //  console.log(req.file)
+        // Utilise la librairie sharp pour redimensionner en 200x100, et renvoi la miniature dans un autre fichier dans le dossier de destination choisi dans le diskStorage
+        await sharp(req.file.path, { failOnError: false })
+        .resize({ width: 200, height: 100 }) 
+        .toFile( 
+          path.resolve(req.file.destination + '/thumbnail', req.file.filename),
+          )
+          // Vous pouvez utiliser ces variables pour faire des insertions en base de données ou autre
+         let filename = req.file.filename
+        }
+        res.send(encode_image)
+      } catch (e) {
+        res.status(400).send(e)
+      }
+  bdd.addProduit("produit",req,function(){
+ //   console.log("req.body : ",req.body)
   })
 })
 

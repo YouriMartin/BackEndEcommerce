@@ -96,37 +96,52 @@ exports.getUser = function (table, datas, callback) {
 };
 
 exports.addCateg = function (table,datas,callback){
+ // console.log("datas : ",datas.body)
+ // console.log("file : ",datas.file )
   let sql = 
   "INSERT INTO "+
    table + 
    " VALUE(NULL,'" +
-    datas.nom_categ +
+    datas.body.nom +
     "','" +
-    datas.photo_categ +
+    datas.file.filename +
     "' );";
-    console.log(sql);
+   console.log(sql);
     conn.query(sql, function (error) {
       if (error) {
         console.log(error);
       }
       callback();
     });
+};
+
+exports.showId = function(table,callback){
+  let sql = "SELECT id,nom_categ FROM " + table;
+  console.log(sql);
+    conn.query(sql, function (error,rows) {
+      if (error) {
+        console.log(error);
+      }
+      callback(rows);
+    });
 }
 
 exports.addProduit = function (table,datas,callback){
+ // console.log("datas : ",datas.body)
+ // console.log("file : ",datas.file )
   let sql = 
   "INSERT INTO "+
    table + 
    " VALUE(NULL,'" +
-    datas.nom_produit +
+    datas.body.nom +
     "','" +
-    datas.photo_produit +
+    datas.file.filename +
     "','" +
-    datas.prix_produit + 
+    datas.body.prix + 
     "','" +
-    datas.description_produit +
+    datas.body.description +
     "','" +
-    datas.id_categ +
+    datas.body.selected +
     "' );";
     console.log(sql);
     conn.query(sql, function (error) {
