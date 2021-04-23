@@ -123,8 +123,8 @@ exports.showId = function(table,callback){
 }
 
 exports.addProduit = function (table,datas,callback){
-  console.log("datas : ",datas.body)
- // console.log("file : ",datas.file )
+ // console.log("datas : ",datas.body)
+//  console.log("file : ",datas.file )
   let sql = 
   "INSERT INTO "+
    table + 
@@ -149,6 +149,7 @@ exports.addProduit = function (table,datas,callback){
 }
 
 exports.addMenu = function (table,datas,callback){
+//  console.log("data", datas.body)
   let sql = 
   "INSERT INTO "+
    table + 

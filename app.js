@@ -7,9 +7,9 @@ const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
 //const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const multer = require('multer')
-const sharp = require('sharp')
-const path = require('path')
+const multer = require("multer");
+const sharp = require("sharp");
+const path = require("path");
 //const fs = require('fs')
 
 dotenv.config();
@@ -63,15 +63,15 @@ var storageProduit = multer.diskStorage({
     fileSize: 1000000, //1Mo
   },
   // La destination, ici ce sera à la racine dans le dossier img
- destination: function (req, file, cb) {
-   cb(null, '../projetEcommerce/src/assets/produit')
+  destination: function (req, file, cb) {
+    cb(null, "../projetEcommerce/src/assets/produit");
   },
   // Gestion des erreurs
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error('Le fichier doit etre un JPG'))
+      return cb(new Error("Le fichier doit etre un JPG"));
     }
-    cb(undefined, true)
+    cb(undefined, true);
   },
   // Fonction qui renomme l'image
   filename: function (req, file, cb) {
@@ -79,48 +79,48 @@ var storageProduit = multer.diskStorage({
     cb(
       null,
       Math.random().toString(36).substring(7) +
-        '.' +
-        file.originalname.split('.')[1],
-    )
+        "." +
+        file.originalname.split(".")[1]
+    );
   },
-})
+});
 
-//stockage image menu 
+//stockage image menu
 var storageMenu = multer.diskStorage({
   limits: {
     fileSize: 1000000,
   },
- destination: function (req, file, cb) {
-   cb(null, '../projetEcommerce/src/assets/menus')
+  destination: function (req, file, cb) {
+    cb(null, "../projetEcommerce/src/assets/menus");
   },
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(jpg|jpeg|png)$/)) {
-      return cb(new Error('Le fichier doit etre un JPG'))
+      return cb(new Error("Le fichier doit etre un JPG"));
     }
-    cb(undefined, true)
+    cb(undefined, true);
   },
   filename: function (req, file, cb) {
     cb(
       null,
       Math.random().toString(36).substring(7) +
-        '.' +
-        file.originalname.split('.')[1],
-    )
+        "." +
+        file.originalname.split(".")[1]
+    );
   },
-})
+});
 
 // Création de l'objet multer
 const upload = multer({
   storage: storageProduit,
-})
+});
 const uploadMenu = multer({
   storage: storageMenu,
-})
+});
 
 app.use(express.json());
 app.use(function (req, res, next) {
   console.log("une requete a été effectué à", Date.now());
- 
+
   next();
 });
 
@@ -150,7 +150,7 @@ app.post("/menuparams", function (req, res) {
   });
 });
 //----------------------------------------------------------------------------
-    // Formulaire inscription/connexion
+// Formulaire inscription/connexion
 
 app.post("/inscription", function (req, res) {
   bdd.getOne("utilisateur", req.body, function (ret) {
@@ -191,55 +191,61 @@ app.post("/connexion", function (req, res) {
 });
 
 //-----------------------------------------------------------------------------------
-    // Formulaires ajout de données
-    
-    app.post('/addCateg', (req, res) => {    
-      console.log(req.body)
-        bdd.addCateg("categorie",req,function(categorie){
-          res.json({ categorie: categorie });
-    })
+// Formulaires ajout de données
+
+app.post("/addCateg", (req, res) => {
+  console.log(req.body);
+  bdd.addCateg("categorie", req, function (categorie) {
+    res.json({ categorie: categorie });
   });
- 
-  app.get("/id_product", function (req, res) {
-    bdd.showId("categorie", function (categorie) {
+});
+
+app.get("/id_product", function (req, res) {
+  bdd.showId("categorie", function (categorie) {
     //  console.log(categorie)
-      res.json({ categorie: categorie });
-    });
+    res.json({ categorie: categorie });
   });
+});
 
-
-  app.post('/addProduit', upload.single('img'), async (req, res) => {
-    try {
-     if (req.file) {
-        console.log(req.file)
-        // Utilise la librairie sharp pour redimensionner en 200x100, et renvoi la miniature dans un autre fichier dans le dossier de destination choisi dans le diskStorage
-        await sharp(req.file.path, { failOnError: false })
-        .resize({ width: 300, height: 300 }) 
-        .toFile( 
-          path.resolve(req.file.destination + '/thumbnail', req.file.filename),
-          )
-          // Vous pouvez utiliser ces variables pour faire des insertions en base de données ou autre
-         let filename = req.file.filename
-        }
-        res.send("succes")
-      } catch (e) {
-        res.status(400).send(e)
-      }
-  bdd.addProduit("produit",req,function(){
- //   console.log("req.body : ",req.body)
-  })
-})
-
-app.post('/addMenu',uploadMenu.single('img'), (req, res) => {    
+app.post("/addProduit", upload.single("img"), async (req, res) => {
   try {
-      res.send("succes")
-    } catch (e) {
-      res.status(400).send(e)
+    if (req.file) {
+      console.log(req.file);
+      // Utilise la librairie sharp pour redimensionner en 200x100, et renvoi la miniature dans un autre fichier dans le dossier de destination choisi dans le diskStorage
+      await sharp(req.file.path, { failOnError: false })
+        .resize({ width: 300, height: 300 })
+        .toFile(
+          path.resolve(req.file.destination + "/thumbnail", req.file.filename)
+        );
     }
-bdd.addMenu("menu",req,function(){
-//   console.log("req.body : ",req.body)
-})
-})
+    res.send("succes");
+  } catch (e) {
+    res.status(400).send(e);
+  }
+  bdd.addProduit("produit", req, function () {
+    //   console.log("req.body : ",req.body)
+  });
+});
+
+app.post("/addMenu", uploadMenu.single("img"), async (req, res) => {
+  try {
+    if (req.file) {
+      console.log(req.file);
+      // Utilise la librairie sharp pour redimensionner en 200x100, et renvoi la miniature dans un autre fichier dans le dossier de destination choisi dans le diskStorage
+      await sharp(req.file.path, { failOnError: false })
+        .resize({ width: 300, height: 300 })
+        .toFile(
+          path.resolve(req.file.destination + "/thumbnail", req.file.filename)
+        );
+    }
+    res.send("succes");
+  } catch (e) {
+    res.status(400).send(e);
+  }
+  bdd.addMenu("menu", req, function () {
+    //   console.log("req.body : ",req.body)
+  });
+});
 
 app.listen(9000);
 console.log("le serveur écoute sur le port 9000");
