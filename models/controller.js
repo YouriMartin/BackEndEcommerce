@@ -4,7 +4,7 @@ const salt = bcrypt.genSaltSync(10);
 
 exports.getProduct = function (table, callback) {
   var sql =
-    "SELECT produit.id, produit.nom_produit, produit.photo_produit, produit.prix_produit, produit.description_produit FROM produit INNER JOIN categorie ON produit.id_categorie = categorie.id WHERE categorie.nom_categ = '" +
+    "SELECT produit.id AS id_produit , produit.nom_produit, produit.photo_produit, produit.prix_produit, produit.description_produit, categorie.nom_categ FROM produit INNER JOIN categorie ON produit.id_categorie = categorie.id WHERE categorie.nom_categ = '" +
     table +
     "'";
   console.log(sql);
@@ -82,7 +82,7 @@ exports.create = function (table, datas, callback) {
   });
 };
 exports.getUser = function (table, datas, callback) {
- // console.log(datas);
+  // console.log(datas);
   var sql =
     "SELECT * FROM " + table + " WHERE mail = " + "'" + datas.mail + "'";
   console.log(sql);
