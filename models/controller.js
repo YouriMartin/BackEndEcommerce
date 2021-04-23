@@ -48,7 +48,6 @@ exports.getOne = function (table, datas, callback) {
     "'";
   console.log(sql1);
   conn.query(sql1, function (error, rows) {
-    7;
     if (error) {
       console.log(error);
     }
@@ -95,16 +94,13 @@ exports.getUser = function (table, datas, callback) {
   });
 };
 
+
 exports.addCateg = function (table,datas,callback){
- // console.log("datas : ",datas.body)
- // console.log("file : ",datas.file )
   let sql = 
   "INSERT INTO "+
    table + 
    " VALUE(NULL,'" +
     datas.body.nom +
-    "','" +
-    datas.file.filename +
     "' );";
    console.log(sql);
     conn.query(sql, function (error) {
@@ -127,7 +123,7 @@ exports.showId = function(table,callback){
 }
 
 exports.addProduit = function (table,datas,callback){
- // console.log("datas : ",datas.body)
+  console.log("datas : ",datas.body)
  // console.log("file : ",datas.file )
   let sql = 
   "INSERT INTO "+
@@ -157,11 +153,11 @@ exports.addMenu = function (table,datas,callback){
   "INSERT INTO "+
    table + 
    " VALUE(NULL,'" +
-    datas.nom_menu +
+    datas.body.nom +
     "','" +
-    datas.photo_menu +
+    datas.file.filename +
     "','" +
-    datas.prix_menu + 
+    datas.body.prix + 
     "' );";
     console.log(sql);
     conn.query(sql, function (error) {
